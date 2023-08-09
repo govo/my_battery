@@ -1,13 +1,11 @@
 package com.onlinemusic.mybattery
 
 import android.R
+import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
-import android.os.BatteryManager
-import android.os.Build
-import android.os.Bundle
-import android.os.CountDownTimer
+import android.os.*
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
@@ -29,6 +27,10 @@ class FirstFragment : Fragment() {
     private val binding get() = _binding!!
     private val amList = mutableListOf<String>()
     private var adapter: ArrayAdapter<String>? = null
+    private var maxTemp: Int = 350
+    private var minTemp: Int = 50
+    private var vibeCount: Int = 0
+    private var vibeCountMax: Int = 10
 
 
     override fun onCreateView(
@@ -65,6 +67,16 @@ class FirstFragment : Fragment() {
             else -> "未知状态"
         }
         return s
+    }
+
+    fun playVibe() {
+        val vibrator =
+            context?.getSystemService(Context.VIBRATOR_SERVICE) as Vibrator
+        if (Build.VERSION.SDK_INT >= 26) {
+            vibrator.vibrate(VibrationEffect.createOneShot(100, VibrationEffect.EFFECT_TICK))
+        } else {
+            vibrator.vibrate(100)
+        }
     }
 
     fun toDisplayNum(n: Int, r: Int): String {
@@ -110,6 +122,18 @@ class FirstFragment : Fragment() {
         val health: Int = batteryStatus?.getIntExtra(BatteryManager.EXTRA_HEALTH, -1) ?: -1
         val temperature: Int =
             batteryStatus?.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1) ?: -1
+        if (temperature >= maxTemp || temperature <= minTemp) {
+            if (vibeCount % vibeCountMax == 0) {
+                playVibe()
+            }
+            if (vibeCount >= vibeCountMax) {
+                vibeCount = 0
+            }
+            vibeCount += 1
+        } else if (vibeCount > 0) {
+            vibeCount = 0
+        }
+
         val low: Boolean =
             batteryStatus?.getBooleanExtra(BatteryManager.EXTRA_BATTERY_LOW, false) ?: false
 //        val cycle: Int = batteryStatus?.getIntExtra(BatteryManager.EXTRA_CYCLE_COUNT, -1) ?: -1 //API 34, android14
@@ -135,7 +159,12 @@ class FirstFragment : Fragment() {
 总电量水平: $scale
 建康状态: ${toHealthString(health)}
 剩余百分比: $cap%
-*温度: ${toDisplayNum(temperature, 10)}℃
+*温度: ${
+            toDisplayNum(
+                temperature,
+                10
+            )
+        }℃ ${if (temperature >= maxTemp) " ‼️温度过高‼️" else if (temperature <= minTemp) " 🥶温度过低🥶" else " ✅(" + minTemp/10 + "-" + maxTemp/10+"℃)"}
 电压: ${toDisplayNum(volatile, 1000)}V
 是否低电量: $low
 循环次数：Android14可能
@@ -156,7 +185,6 @@ class FirstFragment : Fragment() {
         super.onViewCreated(view, savedInstanceState)
         adapter = ArrayAdapter<String>(requireContext(), R.layout.simple_list_item_1, amList)
         binding.amList.adapter = adapter
-
         updateBattery()
         binding.textviewFirst.setOnClickListener {
             updateBattery()
