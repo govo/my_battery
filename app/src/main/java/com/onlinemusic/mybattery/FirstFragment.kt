@@ -136,7 +136,7 @@ class FirstFragment : Fragment() {
 建康状态: ${toHealthString(health)}
 剩余百分比: $cap%
 *温度: ${toDisplayNum(temperature, 10)}℃
-电压: $volatile
+电压: ${toDisplayNum(volatile, 1000)}V
 是否低电量: $low
 循环次数：Android14可能
 剩余电量: ${toDisplayNum(cc, 1000)}mAh
