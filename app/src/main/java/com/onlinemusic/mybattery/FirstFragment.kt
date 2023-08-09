@@ -173,9 +173,7 @@ class FirstFragment : Fragment() {
 当前电流: $cAmp
 电池状态: ${toStatus(bs)}
 剩余能量（瓦时）: $ecStr
-图标: $icon
-展示: $present
-技术: $technology
+展示: $present 技术: $technology
 右边为当前电流=====`>
 负数充电，正数放电
 """.trimMargin()
