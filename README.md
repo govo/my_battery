@@ -7,5 +7,4 @@
 支持请扫二维码。
 
 ## APK下载
-[app-release.apk](https://github.com/govo/my_battery/blob/main/app/release/app-release.apk)
-
+[app-release.apk](app/release/app-release.apk)
