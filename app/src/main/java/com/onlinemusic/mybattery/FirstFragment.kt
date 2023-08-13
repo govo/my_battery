@@ -1,17 +1,16 @@
 package com.onlinemusic.mybattery
 
 import android.R
-import android.app.Service
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.ActivityInfo
 import android.os.*
-import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
-import androidx.navigation.fragment.findNavController
+import androidx.fragment.app.Fragment
 import com.onlinemusic.mybattery.databinding.FragmentFirstBinding
 import java.util.*
 
@@ -32,7 +31,10 @@ class FirstFragment : Fragment() {
     private var vibeCount: Int = 0
     private var vibeCountMax: Int = 10
 
-
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+    }
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -42,7 +44,6 @@ class FirstFragment : Fragment() {
         return binding.root
 
     }
-
     fun toStatus(code: Int): String {
         val s = when (code) {
             BatteryManager.BATTERY_STATUS_CHARGING -> "充电"
@@ -54,7 +55,6 @@ class FirstFragment : Fragment() {
         }
         return s
     }
-
     fun toHealthString(code: Int): String {
         val s = when (code) {
             BatteryManager.BATTERY_HEALTH_GOOD -> "良好"
