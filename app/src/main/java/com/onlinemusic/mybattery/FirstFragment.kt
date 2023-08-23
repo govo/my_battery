@@ -35,6 +35,7 @@ class FirstFragment : Fragment() {
         super.onCreate(savedInstanceState)
         requireActivity().setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
     }
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
@@ -44,6 +45,7 @@ class FirstFragment : Fragment() {
         return binding.root
 
     }
+
     fun toStatus(code: Int): String {
         val s = when (code) {
             BatteryManager.BATTERY_STATUS_CHARGING -> "充电"
@@ -55,6 +57,7 @@ class FirstFragment : Fragment() {
         }
         return s
     }
+
     fun toHealthString(code: Int): String {
         val s = when (code) {
             BatteryManager.BATTERY_HEALTH_GOOD -> "良好"
@@ -134,6 +137,11 @@ class FirstFragment : Fragment() {
             vibeCount = 0
         }
 
+        val pm = context?.getSystemService(Context.POWER_SERVICE) as PowerManager
+        val isInteractive = pm.isInteractive();
+        val iState = if (isInteractive) "☝️" else "✊"
+        val iState2 = if (pm.isInteractive()) "是️" else "否"
+
         val low: Boolean =
             batteryStatus?.getBooleanExtra(BatteryManager.EXTRA_BATTERY_LOW, false) ?: false
 //        val cycle: Int = batteryStatus?.getIntExtra(BatteryManager.EXTRA_CYCLE_COUNT, -1) ?: -1 //API 34, android14
@@ -148,7 +156,7 @@ class FirstFragment : Fragment() {
         val hour = c.get(Calendar.HOUR_OF_DAY)
         val minute = c.get(Calendar.MINUTE)
         val second = c.get(Calendar.SECOND)
-        amList.add(0, "$hour:$minute:$second\n$cAmp")
+        amList.add(0, "$hour:$minute:$second $iState \n$cAmp")
         adapter?.notifyDataSetChanged();
 
         binding.textviewFirst.text = """
@@ -164,7 +172,7 @@ class FirstFragment : Fragment() {
                 temperature,
                 10
             )
-        }℃ ${if (temperature >= maxTemp) " ‼️温度过高‼️" else if (temperature <= minTemp) " 🥶温度过低🥶" else " ✅(" + minTemp/10 + "-" + maxTemp/10+"℃)"}
+        }℃ ${if (temperature >= maxTemp) " ‼️温度过高‼️" else if (temperature <= minTemp) " 🥶温度过低🥶" else " ✅(" + minTemp / 10 + "-" + maxTemp / 10 + "℃)"}
 电压: ${toDisplayNum(volatile, 1000)}V
 是否低电量: $low
 循环次数：Android14可能
@@ -173,6 +181,7 @@ class FirstFragment : Fragment() {
 当前电流: $cAmp
 电池状态: ${toStatus(bs)}
 剩余能量（瓦时）: $ecStr
+交互中：$iState2 $iState
 展示: $present 技术: $technology
 右边为当前电流=====`>
 负数充电，正数放电
