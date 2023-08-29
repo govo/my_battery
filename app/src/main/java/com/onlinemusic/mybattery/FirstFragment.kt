@@ -82,7 +82,7 @@ class FirstFragment : Fragment() {
         }
     }
 
-    fun toDisplayNum(n: Int, r: Int): String {
+    fun toDisplayNum(n: Int, r: Long): String {
         if (n == 0) return "0"
         var p = if (n < 0) "-" else ""
         var nn = if (n < 0) n * -1 else n
@@ -104,7 +104,6 @@ class FirstFragment : Fragment() {
             context?.getSystemService(Context.BATTERY_SERVICE) as BatteryManager;
         val cc = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CHARGE_COUNTER);
         var ca = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_AVERAGE);
-        ca = if (ca < 0) 0 else ca;
         val cn = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CURRENT_NOW);
         val bs = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_STATUS);
         val cap = batteryManager.getIntProperty(BatteryManager.BATTERY_PROPERTY_CAPACITY);
@@ -127,7 +126,7 @@ class FirstFragment : Fragment() {
             batteryStatus?.getIntExtra(BatteryManager.EXTRA_TEMPERATURE, -1) ?: -1
         if (temperature >= maxTemp || temperature <= minTemp) {
             if (vibeCount % vibeCountMax == 0) {
-                playVibe()
+//                playVibe()
             }
             if (vibeCount >= vibeCountMax) {
                 vibeCount = 0
@@ -176,9 +175,10 @@ class FirstFragment : Fragment() {
 电压: ${toDisplayNum(volatile, 1000)}V
 是否低电量: $low
 循环次数：Android14可能
-剩余电量: ${toDisplayNum(cc, 1000)}mAh
-平均电流: ${toDisplayNum(ca, 1000)}mA
+剩余电量: ${toDisplayNum(cc, 1000)}mAh 
+平均电流: ${if (ca == Int.MIN_VALUE) "未知" else toDisplayNum(ca, 1000) + "mA"}  
 当前电流: $cAmp
+当前功率： ${toDisplayNum((cn * volatile / 1000).toLong(), 1000_000)}W
 电池状态: ${toStatus(bs)}
 剩余能量（瓦时）: $ecStr
 交互中：$iState2 $iState
