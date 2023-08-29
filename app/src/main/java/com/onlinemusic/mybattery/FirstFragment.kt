@@ -155,9 +155,10 @@ class FirstFragment : Fragment() {
         val hour = c.get(Calendar.HOUR_OF_DAY)
         val minute = c.get(Calendar.MINUTE)
         val second = c.get(Calendar.SECOND)
-        amList.add(0, "$hour:$minute:$second $iState \n$cAmp")
-        adapter?.notifyDataSetChanged();
+        val walit = "${toDisplayNum((cn * volatile / 1000).toLong(), 1000_000)} W"
 
+        amList.add(0, "$hour:$minute:$second $iState \n$cAmp \n$walit")
+        adapter?.notifyDataSetChanged();
         binding.textviewFirst.text = """
 电池状态:        
 是否在充电: $isCharging
@@ -178,7 +179,7 @@ class FirstFragment : Fragment() {
 剩余电量: ${toDisplayNum(cc, 1000)}mAh 
 平均电流: ${if (ca == Int.MIN_VALUE) "未知" else toDisplayNum(ca, 1000) + "mA"}  
 当前电流: $cAmp
-当前功率： ${toDisplayNum((cn * volatile / 1000).toLong(), 1000_000)}W
+当前功率： $walit
 电池状态: ${toStatus(bs)}
 剩余能量（瓦时）: $ecStr
 交互中：$iState2 $iState
